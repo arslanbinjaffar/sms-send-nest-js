@@ -76,14 +76,24 @@ export class SmsSendService {
   }
 
   
-  async getGroups(page:number,limit:number) {
-    const existingData = await this.smsSendModel.find()
-    .skip((page - 1) * limit)
-    .limit(limit)
-    .exec()
-    if (!existingData && existingData.length == 0) {
-      return;
+  async getGroups(page: number, limit: number) {
+    // Validate input
+    if (page < 1 || limit < 1) {
+        throw new Error('Page and limit must be greater than 0');
     }
+
+    // Fetch data with pagination
+    const existingData = await this.smsSendModel
+        .find()
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+
+    // Check if no data is found
+    if (existingData.length === 0) {
+        return [];
+    }
+
     return existingData;
-  }
+}
 }

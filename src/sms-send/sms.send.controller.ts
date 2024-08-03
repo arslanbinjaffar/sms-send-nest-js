@@ -27,19 +27,21 @@ export class smsSendController{
     }
 
     @Get('group')
-    async getGroup(@Res() response,@Query() page: number, limit: number) {
+    async getGroup(@Res() response, @Query('page') page: number, @Query('limit') limit: number) {
         try {
-            const existingData=await this.smsSendService.getGroups(page,limit)
+            // Call the service method with pagination parameters
+            const existingData = await this.smsSendService.getGroups(page, limit);
+    
             return response.status(200).json({
-                message: "successfully get Groups",
+                message: "Successfully retrieved groups",
                 data: existingData
-            })
-            
+            });
         } catch (error) {
             return response.status(error.status || HttpStatus.INTERNAL_SERVER_ERROR).json({
-                message: error.message || 'An error occurred while login',
+                message: error.message || 'An error occurred while retrieving groups',
             });
         }
     }
+    
 }
 
