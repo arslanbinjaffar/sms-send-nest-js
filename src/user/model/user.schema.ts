@@ -22,11 +22,12 @@ export class User extends Document {
 
     @Prop({
         type: String,
-        enum:["admin","user"],
-        required: true,
-        default:"admin"
+        enum:["super_admin","admin","user"],
+        default:"user"
     })
-    roles:string
+    roles: string
+    @Prop({type:Boolean,default:true})
+    isActive:boolean
 }
 
 export const userSchema = SchemaFactory.createForClass(User);
