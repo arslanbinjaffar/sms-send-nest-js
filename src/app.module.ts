@@ -32,6 +32,6 @@ export class AppModule implements OnModuleInit {
 
     this.connection.on('error', (err) => {
       console.error('Database connection error:', err);
-    });
+    });  
   }
 }
