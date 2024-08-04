@@ -33,7 +33,10 @@ export class smsSendController {
         try {
             // Call the service method with pagination parameters
             const existingData = await this.smsSendService.getGroups(page, limit);
-            
+            return response.status(HttpStatus.OK).json({
+                message: "Successfully sent message",
+                data: existingData,
+            });
         } catch (error) {
             return response.status(error.status || HttpStatus.INTERNAL_SERVER_ERROR).json({
                 message: error.message || 'An error occurred while retrieving groups',
