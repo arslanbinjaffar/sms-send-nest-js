@@ -5,6 +5,9 @@ import { SmsSend } from './model/sms.send.schema';
 import * as axios from 'axios';
 import * as csv from 'csv-parser';
 import { v4 as uuidv4 } from 'uuid';
+import { smsSendDto } from './dto/sms.send.dto';
+import { Client, ApiController, ApiResponse, BandwidthMessage } from '@bandwidth/messaging';
+import { Response, response } from 'express';
 
 @Injectable()
 export class SmsSendService {
@@ -95,5 +98,58 @@ export class SmsSendService {
     }
 
     return existingData;
-}
+  }
+  
+ 
+  async sendsms(data: smsSendDto): Promise<any> {
+    const recipients = [];
+    data.users.slice(0,10).forEach((item) => {
+      if (item._2 !== "Phone") {
+        let cleanedNumber = item._2.replace(/[-() \s]/g, '');
+        if (!cleanedNumber.startsWith('+1')) {
+          cleanedNumber = '+1' + cleanedNumber;
+        }
+        recipients.push(cleanedNumber);
+      }
+    });
+
+    const BW_USERNAME = "arslandeveloper";
+    const BW_PASSWORD = "776x5QcTqyrZB5g";
+    const BW_ACCOUNT_ID = "5010362";
+    const BW_MESSAGING_APPLICATION_ID = "4ebcf6fe-d2bc-47c3-a082-e3d34fa557cf";
+    const BW_NUMBER = "+923271064839";
+    const USER_NUMBER = recipients;
+
+    const client = new Client({
+      basicAuthUserName: BW_USERNAME,
+      basicAuthPassword: BW_PASSWORD,
+    });
+
+    const controller = new ApiController(client);
+
+    const accountId = BW_ACCOUNT_ID;
+
+    const sendMessage = async function () {
+      try {
+        const response = await controller.createMessage(accountId, {
+          applicationId: BW_MESSAGING_APPLICATION_ID,
+          to: USER_NUMBER,
+          from: BW_NUMBER,
+          text: 'hi i am arslan',
+        });
+        return {
+          statusCode: 200,
+          result: response,
+        };
+      } catch (error) {
+        console.error(error);
+        return {
+          statusCode: error.response?.statusCode || 500,
+          message: error.response?.data?.message || 'Failed to send message',
+        };
+      }
+    };
+
+    return await sendMessage();
+  }
 }
