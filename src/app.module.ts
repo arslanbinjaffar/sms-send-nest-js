@@ -14,8 +14,8 @@ import { SeederService } from './seed/user.seed';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/sms'),
-    // MongooseModule.forRoot(process.env.MONGO_URI),
+    // MongooseModule.forRoot('mongodb://localhost:27017/sms'),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     MongooseModule.forFeature([{ name: User.name, schema: userSchema }]),
     smsSendModule,
     userModule,

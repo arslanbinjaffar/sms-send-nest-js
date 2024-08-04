@@ -142,7 +142,6 @@ export class SmsSendService {
           result: response,
         };
       } catch (error) {
-        console.error(error);
         return {
           statusCode: error.response?.statusCode || 500,
           message: error.response?.data?.message || 'Failed to send message',
