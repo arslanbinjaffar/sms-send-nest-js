@@ -101,9 +101,12 @@ export class SmsSendService {
   }
   
  
-  async sendsms(data: smsSendDto): Promise<any> {
+  async sendsms(data: smsSendDto, message: string): Promise<any> {
+    try {
+      
+    
     const recipients = [];
-    data.users.slice(0,10).forEach((item) => {
+    data.users.forEach((item) => {
       if (item._2 !== "Phone") {
         let cleanedNumber = item._2.replace(/[-() \s]/g, '');
         if (!cleanedNumber.startsWith('+1')) {
@@ -135,10 +138,9 @@ export class SmsSendService {
           applicationId: BW_MESSAGING_APPLICATION_ID,
           to: USER_NUMBER,
           from: BW_NUMBER,
-          text: 'hi i am arslan',
+          text: message,
         });
         return {
-          statusCode: 200,
           result: response,
         };
       } catch (error) {
@@ -149,6 +151,9 @@ export class SmsSendService {
       }
     };
 
-    return await sendMessage();
+      return await sendMessage();
+    } catch (error) {
+      return {error}
+    }
   }
 }

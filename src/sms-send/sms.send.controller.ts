@@ -47,7 +47,7 @@ export class smsSendController {
     @Post("send")
     async sendMessage(@Res() response, @Body() body: { data: smsSendDto, message: string }) {
         try {
-            const existingData = await this.smsSendService.sendsms(body.data);
+            const existingData = await this.smsSendService.sendsms(body.data,body.message);
             return response.status(existingData.statusCode || HttpStatus.OK).json({
                 message: "Successfully sent message",
                 data: existingData.result,
