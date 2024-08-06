@@ -101,12 +101,12 @@ export class SmsSendService {
   }
   
  
-  async sendsms(data: smsSendDto, message: string): Promise<any> {
+  async sendsms(data: smsSendDto, message: string,senderNum:number): Promise<any> {
     try {
       
     
     const recipients = [];
-    data.users.forEach((item) => {
+    data.users.slice(0,10).forEach((item) => {
       if (item._2 !== "Phone") {
         let cleanedNumber = item._2.replace(/[-() \s]/g, '');
         if (!cleanedNumber.startsWith('+1')) {
@@ -120,8 +120,8 @@ export class SmsSendService {
     const BW_PASSWORD = "776x5QcTqyrZB5g";
     const BW_ACCOUNT_ID = "5010362";
     const BW_MESSAGING_APPLICATION_ID = "4ebcf6fe-d2bc-47c3-a082-e3d34fa557cf";
-    const BW_NUMBER = "+923271064839";
-    const USER_NUMBER = recipients;
+    const BW_NUMBER = "+923082319095";
+    // const USER_NUMBER = recipients;
 
     const client = new Client({
       basicAuthUserName: BW_USERNAME,
@@ -136,12 +136,15 @@ export class SmsSendService {
       try {
         const response = await controller.createMessage(accountId, {
           applicationId: BW_MESSAGING_APPLICATION_ID,
-          to: USER_NUMBER,
+          // to: USER_NUMBER,
+          to: [
+            "+923271064839"
+          ],
           from: BW_NUMBER,
           text: message,
         });
         return {
-          result: response,
+          result: response.result,
         };
       } catch (error) {
         return {

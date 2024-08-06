@@ -45,18 +45,17 @@ export class smsSendController {
     }
     
     @Post("send")
-    async sendMessage(@Res() response, @Body() body: { data: smsSendDto, message: string }) {
-        try {
-            const existingData = await this.smsSendService.sendsms(body.data,body.message);
-            return response.status(existingData.statusCode || HttpStatus.OK).json({
-                message: "Successfully sent message",
-                data: existingData.result,
-            });
-        } catch (error) {
-            return response.status(error.status || HttpStatus.INTERNAL_SERVER_ERROR).json({
-                message: error.message || 'An error occurred while sending the message',
+    async sendMessage(@Res() response, @Body() body: { data: smsSendDto, message: string,senderNum:number }) {
+            const {result} = await this.smsSendService.sendsms(body.data, body.message,body.senderNum);
+        if (result.statusCode == 500) {
+            return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                error: 'An error occurred while sending the message' || result.message,
             });
         }
+        return response.status(HttpStatus.OK).json({
+                message:result.message,
+                result
+            });
     }
 }
 
