@@ -139,8 +139,9 @@ export class SmsSendService {
           to: USER_NUMBER,
           from: BW_NUMBER,
           text: message,
+
         });
-        
+         
         return {
           result: response.result,
         };
