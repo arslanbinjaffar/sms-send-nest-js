@@ -8,13 +8,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { smsSendDto } from './dto/sms.send.dto';
 import { Client, ApiController, ApiResponse, BandwidthMessage } from '@bandwidth/messaging';
 import { Response, response } from 'express';
-
+import * as base64 from 'base-64';
 @Injectable()
 export class SmsSendService {
   constructor(
     @InjectModel(SmsSend.name) private readonly smsSendModel: Model<SmsSend>,
   ) {}
-
+  private BW_USERNAME = "arslandeveloper";
+  private BW_PASSWORD = "776x5QcTqyrZB5g";
+  private BW_ACCOUNT_ID = "5010362";
+  private BW_MESSAGING_APPLICATION_ID = "4ebcf6fe-d2bc-47c3-a082-e3d34fa557cf";
   async processCSVData(results: any[]): Promise<any> {
     const newResults = results.map(result => ({
       ...result,
@@ -101,10 +104,8 @@ export class SmsSendService {
   }
   
  
-  async sendsms(data: smsSendDto, message: string,senderNum:number): Promise<any> {
+  async sendsms(data: smsSendDto, message: string,senderNum:string): Promise<any> {
     try {
-      
-    
     const recipients = [];
     data.users.slice(0,10).forEach((item) => {
       if (item._2 !== "Phone") {
@@ -116,37 +117,35 @@ export class SmsSendService {
       }
     });
 
-    const BW_USERNAME = "arslandeveloper";
-    const BW_PASSWORD = "776x5QcTqyrZB5g";
-    const BW_ACCOUNT_ID = "5010362";
-    const BW_MESSAGING_APPLICATION_ID = "4ebcf6fe-d2bc-47c3-a082-e3d34fa557cf";
-    const BW_NUMBER = "+923082319095";
-    // const USER_NUMBER = recipients;
+  
+    const BW_NUMBER = senderNum;
+      // const USER_NUMBER = recipients;
+    const USER_NUMBER = ["+13236042424"];
+      
 
     const client = new Client({
-      basicAuthUserName: BW_USERNAME,
-      basicAuthPassword: BW_PASSWORD,
+      basicAuthUserName: this.BW_USERNAME,
+      basicAuthPassword: this.BW_PASSWORD,
     });
 
     const controller = new ApiController(client);
 
-    const accountId = BW_ACCOUNT_ID;
-
+    const accountId = this.BW_ACCOUNT_ID;
+    const applicationId=this.BW_MESSAGING_APPLICATION_ID
     const sendMessage = async function () {
       try {
         const response = await controller.createMessage(accountId, {
-          applicationId: BW_MESSAGING_APPLICATION_ID,
-          // to: USER_NUMBER,
-          to: [
-            "+923271064839"
-          ],
+          applicationId,
+          to: USER_NUMBER,
           from: BW_NUMBER,
           text: message,
         });
+        
         return {
           result: response.result,
         };
       } catch (error) {
+        console.log(error,"error message")
         return {
           statusCode: error.response?.statusCode || 500,
           message: error.response?.data?.message || 'Failed to send message',
@@ -157,6 +156,51 @@ export class SmsSendService {
       return await sendMessage();
     } catch (error) {
       return {error}
+    }
+  }
+  async createMessagingApplication() {
+    const inboundCallbackUrl = `https://izhmw2qjmx.us-east-2.awsapprunner.com/api/v1/sms/inbound-message`;
+    const outboundCallbackUrl = `https://izhmw2qjmx.us-east-2.awsapprunner.com/api/v1/sms/outbound-status`;
+
+    const auth = base64.encode(`${this.BW_USERNAME}:${this.BW_PASSWORD}`);
+    const url = `https://dashboard.bandwidth.com/api/accounts/${this.BW_ACCOUNT_ID}/applications`;
+
+    const requestData = {
+      Application: {
+        ServiceType: 'Messaging-V2',
+        AppName: 'My Messaging App',
+        InboundCallbackUrl: inboundCallbackUrl,
+        OutboundCallbackUrl: outboundCallbackUrl,
+        InboundCallbackCreds: {
+          UserId: this.BW_USERNAME,
+          Password: this.BW_PASSWORD
+        },
+        OutboundCallbackCreds: {
+          UserId: this.BW_USERNAME,
+          Password: this.BW_PASSWORD
+        },
+        RequestedCallbackTypes: {
+          CallbackType: [
+            'message-delivered',
+            'message-failed',
+            'message-sending'
+          ]
+        }
+      }
+    };
+
+    try {
+      const response = await axios.default.post(url, requestData, {
+        headers: {
+          'Content-Type': 'application/xml',
+          'Authorization': `Basic ${auth``}`
+        }
+      });
+      console.log('Application created successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating application:', error);
+      throw error;
     }
   }
 }

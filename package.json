@@ -28,6 +28,7 @@
     "@nestjs/platform-express": "^10.3.2",
     "@nestjs/platform-fastify": "^10.3.10",
     "axios": "^1.7.3",
+    "base-64": "^1.0.0",
     "bcrypt": "^5.1.1",
     "class-validator": "^0.14.1",
     "csv-parser": "^3.0.0",

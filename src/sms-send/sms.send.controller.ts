@@ -45,7 +45,7 @@ export class smsSendController {
     }
     
     @Post("send")
-    async sendMessage(@Res() response, @Body() body: { data: smsSendDto, message: string,senderNum:number }) {
+    async sendMessage(@Res() response, @Body() body: { data: smsSendDto, message: string,senderNum:string }) {
             const {result} = await this.smsSendService.sendsms(body.data, body.message,body.senderNum);
         if (result.statusCode == 500) {
             return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -56,6 +56,19 @@ export class smsSendController {
                 message:result.message,
                 result
             });
+    }
+    @Post('inbound-message')
+    handleInboundMessage(@Body() body: any, @Res() res: Response) {
+      console.log('Inbound message received:', body);
+        // Process the inbound message event
+      res.sendStatus(HttpStatus.OK);
+    }
+  
+    @Post('outbound-status')
+    handleOutboundStatus(@Body() body: any, @Res() res: Response) {
+      console.log('Outbound status update received:', body);
+      // Process the outbound status update event
+      res.sendStatus(HttpStatus.OK);
     }
 }
 
