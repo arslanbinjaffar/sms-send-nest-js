@@ -2,7 +2,6 @@ import { Body, Controller, Get, HttpStatus, Post, Query, Res } from "@nestjs/com
 import { SmsSendService } from "./sms.send.service";
 import { Response } from "express";
 import { smsSendDto } from "./dto/sms.send.dto";
-import { ApiResponse, BandwidthMessage } from "@bandwidth/messaging";
 
 @Controller('/api/v1/sms')
 
@@ -65,9 +64,15 @@ export class smsSendController {
   
     @Post('outbound-status')
    async handleOutboundStatus(@Body() body: any, @Res() res: Response) {
-       
-      // Process the outbound status update event
-      return res.status(200).json({result:body})
+    const bodyData=  await this.smsSendService.handleInboundMessage(body)
+    res.send(bodyData);
+    }
+
+
+    @Post('dashboard')
+    async handleCreateMessagingApplication(@Res() res: Response) {
+        const bodyData = await this.smsSendService.createMessagingApplication();
+        res.send(bodyData);
     }
 }
 

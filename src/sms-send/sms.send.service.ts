@@ -145,7 +145,7 @@ export class SmsSendService {
 
         });
         return {
-          result: response.result,
+          result: response,
         };
       } catch (error) {
         console.log(error,"error message")
@@ -165,7 +165,7 @@ export class SmsSendService {
     const inboundCallbackUrl = `https://izhmw2qjmx.us-east-2.awsapprunner.com/api/v1/sms/inbound-message`;
     const outboundCallbackUrl = `https://izhmw2qjmx.us-east-2.awsapprunner.com/api/v1/sms/outbound-status`;
 
-    const auth = base64.encode(`${this.BW_USERNAME}:${this.BW_PASSWORD}`);
+    const auth ="12858273ac31b3ff0adf744323fdfdf3488e0777131fd7f4";
     const url = `https://dashboard.bandwidth.com/api/accounts/${this.BW_ACCOUNT_ID}/applications`;
 
     const requestData = {
@@ -196,7 +196,7 @@ export class SmsSendService {
       const response = await axios.default.post(url, requestData, {
         headers: {
           'Content-Type': 'application/xml',
-          'Authorization': `Basic ${auth``}`
+          'Authorization': `Basic ${auth}`
         }
       });
       console.log('Application created successfully:', response.data);
@@ -208,17 +208,17 @@ export class SmsSendService {
   }
 
     async handleInboundMessage(body: any) {
-      return this.inBoundMessgeWebhookModel.create({
-        inboundBody:JSON.stringify(body)
-     })
+      return await this.inBoundMessgeWebhookModel.create({
+        inboundBody: JSON.stringify(body)
+      });
    
     }
   
     
-   async handleOutboundStatus() {
-    //  return this.inBoundMessgeWebhookModel.updateOne({
-    //    $set: { }
-    // })
+   async handleOutboundStatus(body:any,status:any) {
+     return await this.inBoundMessgeWebhookModel.create({
+       outboundBody: JSON.stringify(body)
+     })
       // Process the outbound status update event
       
     }
