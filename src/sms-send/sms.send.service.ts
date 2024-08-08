@@ -217,7 +217,7 @@ export class SmsSendService {
     
    async handleOutboundStatus(body:any,status:any) {
      return await this.inBoundMessgeWebhookModel.create({
-       outboundBody: JSON.stringify(body)
+          inBoundStatus:body
      })
       // Process the outbound status update event
       
