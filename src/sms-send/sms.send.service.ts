@@ -122,8 +122,8 @@ export class SmsSendService {
 
   
     const BW_NUMBER = senderNum;
-      // const USER_NUMBER = recipients;
-    const USER_NUMBER = ["+13236042424"];
+      const USER_NUMBER = recipients;
+    // const USER_NUMBER = ["+13236042424"];
       
 
     const client = new Client({
