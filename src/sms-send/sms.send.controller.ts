@@ -58,18 +58,16 @@ export class smsSendController {
             });
     }
     @Post('inbound-message')
-    handleInboundMessage(@Body() body: any, @Res() res: Response) {
-      console.log('Inbound message received:', body);
-        // Process the inbound message event
-      res.status(200).json({res})
-    //   res.sendStatus(HttpStatus.OK);
+    async handleInboundMessage(@Body() body: any, @Res() res: Response) {
+    const bodyData=  await this.smsSendService.handleInboundMessage(body)
+      res.send(bodyData);
     }
   
     @Post('outbound-status')
-    handleOutboundStatus(@Body() body: any, @Res() res: Response) {
-      console.log('Outbound status update received:', body);
+   async handleOutboundStatus(@Body() body: any, @Res() res: Response) {
+       
       // Process the outbound status update event
-      res.status(200).json({res})
+      return res.status(200).json({result:body})
     }
 }
 

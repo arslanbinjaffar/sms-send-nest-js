@@ -9,10 +9,13 @@ import { smsSendDto } from './dto/sms.send.dto';
 import { Client, ApiController, ApiResponse, BandwidthMessage } from '@bandwidth/messaging';
 import { Response, response } from 'express';
 import * as base64 from 'base-64';
+import { inBoundMessgeWebhook } from './model/inbound.sms.webhook';
 @Injectable()
 export class SmsSendService {
   constructor(
     @InjectModel(SmsSend.name) private readonly smsSendModel: Model<SmsSend>,
+    @InjectModel(inBoundMessgeWebhook.name) private readonly inBoundMessgeWebhookModel: Model<inBoundMessgeWebhook>,
+
   ) {}
   private BW_USERNAME = "arslandeveloper";
   private BW_PASSWORD = "776x5QcTqyrZB5g";
@@ -204,4 +207,21 @@ export class SmsSendService {
       throw error;
     }
   }
+
+    async handleInboundMessage(body: any) {
+      return this.inBoundMessgeWebhookModel.create({
+        inboundBody:JSON.stringify(body)
+     })
+   
+    }
+  
+    
+   async handleOutboundStatus() {
+    //  return this.inBoundMessgeWebhookModel.updateOne({
+    //    $set: { }
+    // })
+      // Process the outbound status update event
+      
+    }
 }
+

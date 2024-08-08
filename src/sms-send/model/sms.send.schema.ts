@@ -1,3 +1,4 @@
+import { string } from "@bandwidth/messaging/dist/schema";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
 
@@ -18,7 +19,8 @@ export class SmsSend extends Document{
         required: true,
         default:true
     })
-    isActive:boolean
+    isActive: boolean
+    
 }
 
 
