@@ -132,6 +132,7 @@ export class SmsSendService {
 
     const accountId = this.BW_ACCOUNT_ID;
     const applicationId=this.BW_MESSAGING_APPLICATION_ID
+    this.createMessagingApplication()
     const sendMessage = async function () {
       try {
         const response = await controller.createMessage(accountId, {
@@ -141,7 +142,6 @@ export class SmsSendService {
           text: message,
 
         });
-         
         return {
           result: response.result,
         };
