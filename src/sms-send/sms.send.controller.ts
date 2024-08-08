@@ -61,14 +61,15 @@ export class smsSendController {
     handleInboundMessage(@Body() body: any, @Res() res: Response) {
       console.log('Inbound message received:', body);
         // Process the inbound message event
-      res.sendStatus(HttpStatus.OK);
+      res.status(200).json({res})
+    //   res.sendStatus(HttpStatus.OK);
     }
   
     @Post('outbound-status')
     handleOutboundStatus(@Body() body: any, @Res() res: Response) {
       console.log('Outbound status update received:', body);
       // Process the outbound status update event
-      res.sendStatus(HttpStatus.OK);
+      res.status(200).json({res})
     }
 }
 
