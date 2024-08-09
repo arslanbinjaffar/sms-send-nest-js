@@ -85,9 +85,15 @@ export class smsSendController {
     @Body() body: MessageReceivedDTO[] | any,
     @Res() res: Response,
   ) {
-    console.log(body, 'body');
-    const bodyData = await this.smsSendService.handleInboundMessage(body);
-    res.send(bodyData);
+    try {
+      const bodyData = await this.smsSendService.handleInboundMessage(body);
+      return res.status(200).json({
+        message: 'new webhook message inbound',
+        bodyData,
+      });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
   }
 
   @Post('outbound-status')

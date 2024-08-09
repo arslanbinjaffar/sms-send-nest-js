@@ -84,5 +84,4 @@ export class MessageReceived extends Document {
   message: Message;
 }
 
-export const MessageReceivedSchema =
-  SchemaFactory.createForClass(MessageReceived);
+export const MessageReceivedSchema =SchemaFactory.createForClass(MessageReceived);
