@@ -3,14 +3,16 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { SmsSend, smsSendSchema } from "./model/sms.send.schema";
 import { SmsSendService } from "./sms.send.service";
 import { smsSendController } from "./sms.send.controller";
-import { inBoundMessgeWebhook, inBoundMessgeWebhookSchema } from "./model/inbound.sms.webhook";
+import { MessageReceived,MessageReceivedSchema,MessageStatusSchema,MessageStatus } from "./model/inbound.schema";
 
 
 @Module({
     imports: [
         MongooseModule.forFeature([{
             name: SmsSend.name, schema: smsSendSchema
-        },{name:inBoundMessgeWebhook.name,schema:inBoundMessgeWebhookSchema}])
+        }, { name: MessageReceived.name, schema: MessageReceivedSchema },
+        {name:MessageStatus.name,schema:MessageStatusSchema}
+        ])
     ],
     providers: [SmsSendService],
     controllers:[smsSendController]

@@ -9,12 +9,15 @@ import { smsSendDto } from './dto/sms.send.dto';
 import { Client, ApiController, ApiResponse, BandwidthMessage } from '@bandwidth/messaging';
 import { Response, response } from 'express';
 import * as base64 from 'base-64';
-import { inBoundMessgeWebhook } from './model/inbound.sms.webhook';
+import { MessageStatus,MessageReceived} from './model/inbound.schema';
+import { MessageReceivedDTO, MessageStatusDTO } from './dto/inbound.dto';
 @Injectable()
 export class SmsSendService {
   constructor(
     @InjectModel(SmsSend.name) private readonly smsSendModel: Model<SmsSend>,
-    @InjectModel(inBoundMessgeWebhook.name) private readonly inBoundMessgeWebhookModel: Model<inBoundMessgeWebhook>,
+    @InjectModel(MessageReceived.name) private readonly MessageReceivedModel: Model<MessageReceived>,
+    @InjectModel(MessageStatus.name) private readonly MessageStatusModel: Model<MessageStatus>,
+
 
   ) {}
   private BW_USERNAME = "arslandeveloper";
@@ -110,19 +113,21 @@ export class SmsSendService {
   async sendsms(data: smsSendDto, message: string,senderNum:string): Promise<any> {
     try {
     const recipients = [];
-    data.users.slice(0,10).forEach((item) => {
+    data.users.slice(855,888).forEach((item) => {
       if (item._2 !== "Phone") {
-        let cleanedNumber = item._2.replace(/[-() \s]/g, '');
-        if (!cleanedNumber.startsWith('+1')) {
-          cleanedNumber = '+1' + cleanedNumber;
-        }
-        recipients.push(cleanedNumber);
+        // let cleanedNumber = item._2.replace(/[-() \s]/g, '');
+        // if (!cleanedNumber.startsWith('+1')) {
+        //   cleanedNumber = '+1' + cleanedNumber;
+        // }
+        // recipients.push(cleanedNumber);
+        return recipients.push(item._2)
       }
     });
 
   
     const BW_NUMBER = senderNum;
       const USER_NUMBER = recipients;
+      console.log(recipients,"recipients")
     // const USER_NUMBER = ["+13236042424"];
       
 
@@ -207,18 +212,23 @@ export class SmsSendService {
     }
   }
 
-    async handleInboundMessage(body: any) {
-      return await this.inBoundMessgeWebhookModel.create({
-        inboundBody: JSON.stringify(body)
-      });
+  async handleInboundMessage(body: MessageReceivedDTO[]) {
+    // const alreadyData=await this.MessageReceivedModel.find({})
+    // if (alreadyData) {
+    //     await this.MessageReceivedModel.deleteMany()
+    // }
+    
+      return await this.MessageReceivedModel.insertMany(body);
    
     }
   
     
-   async handleOutboundStatus(body:any,status:any) {
-     return await this.inBoundMessgeWebhookModel.create({
-          inBoundStatus:body
-     })
+  async handleOutboundStatus(body: MessageStatusDTO[]) {
+    // const alreadyData=await this.MessageStatusModel.find({})
+    // if (alreadyData) {
+    //     await this.MessageStatusModel.deleteMany()
+    // }
+     return await this.MessageStatusModel.insertMany(body)
       // Process the outbound status update event
       
     }
