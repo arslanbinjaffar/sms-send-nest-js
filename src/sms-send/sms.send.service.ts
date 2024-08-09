@@ -6,26 +6,24 @@ import * as axios from 'axios';
 import * as csv from 'csv-parser';
 import { v4 as uuidv4 } from 'uuid';
 import { smsSendDto } from './dto/sms.send.dto';
-import { Client, ApiController, ApiResponse, BandwidthMessage } from '@bandwidth/messaging';
-import { Response, response } from 'express';
-import * as base64 from 'base-64';
-import { MessageStatus,MessageReceived} from './model/inbound.schema';
+import { Client, ApiController } from '@bandwidth/messaging';
+import { MessageStatus, MessageReceived } from './model/inbound.schema';
 import { MessageReceivedDTO, MessageStatusDTO } from './dto/inbound.dto';
 @Injectable()
 export class SmsSendService {
   constructor(
     @InjectModel(SmsSend.name) private readonly smsSendModel: Model<SmsSend>,
-    @InjectModel(MessageReceived.name) private readonly MessageReceivedModel: Model<MessageReceived>,
-    @InjectModel(MessageStatus.name) private readonly MessageStatusModel: Model<MessageStatus>,
-
-
+    @InjectModel(MessageReceived.name)
+    private readonly MessageReceivedModel: Model<MessageReceived>,
+    @InjectModel(MessageStatus.name)
+    private readonly MessageStatusModel: Model<MessageStatus>,
   ) {}
-  private BW_USERNAME = "arslandeveloper";
-  private BW_PASSWORD = "776x5QcTqyrZB5g";
-  private BW_ACCOUNT_ID = "5010362";
-  private BW_MESSAGING_APPLICATION_ID = "4ebcf6fe-d2bc-47c3-a082-e3d34fa557cf";
+  private BW_USERNAME = 'arslandeveloper';
+  private BW_PASSWORD = '776x5QcTqyrZB5g';
+  private BW_ACCOUNT_ID = '5010362';
+  private BW_MESSAGING_APPLICATION_ID = '4ebcf6fe-d2bc-47c3-a082-e3d34fa557cf';
   async processCSVData(results: any[]): Promise<any> {
-    const newResults = results.map(result => ({
+    const newResults = results.map((result) => ({
       ...result,
       id: uuidv4(),
     }));
@@ -57,7 +55,7 @@ export class SmsSendService {
 
       return new Promise((resolve, reject) => {
         parser
-          .on('data', data => {
+          .on('data', (data) => {
             results.push(data);
           })
           .on('end', async () => {
@@ -65,16 +63,19 @@ export class SmsSendService {
               return reject(new Error('Empty file'));
             }
 
-            await this.smsSendModel.init().then(() => {
-              console.log('Indexes created successfully');
-            }).catch(err => {
-              console.error('Error creating indexes:', err);
-            });
+            await this.smsSendModel
+              .init()
+              .then(() => {
+                console.log('Indexes created successfully');
+              })
+              .catch((err) => {
+                console.error('Error creating indexes:', err);
+              });
 
             const userMessage = await this.processCSVData(results);
             resolve(userMessage);
           })
-          .on('error', error => {
+          .on('error', (error) => {
             reject(error);
           });
 
@@ -87,90 +88,89 @@ export class SmsSendService {
     }
   }
 
-  
   async getGroups(page: number, limit: number) {
     // Validate input
     if (page < 1 || limit < 1) {
-        throw new Error('Page and limit must be greater than 0');
+      throw new Error('Page and limit must be greater than 0');
     }
 
     // Fetch data with pagination
     const existingData = await this.smsSendModel
-        .find()
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec();
+      .find()
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
 
     // Check if no data is found
     if (existingData.length === 0) {
-        return [];
+      return [];
     }
 
     return existingData;
   }
-  
- 
-  async sendsms(data: smsSendDto, message: string,senderNum:string): Promise<any> {
+
+  async sendsms(
+    data: smsSendDto,
+    message: string,
+    senderNum: string,
+  ): Promise<any> {
     try {
-    const recipients = [];
-    data.users.slice(855,888).forEach((item) => {
-      if (item._2 !== "Phone") {
-        // let cleanedNumber = item._2.replace(/[-() \s]/g, '');
-        // if (!cleanedNumber.startsWith('+1')) {
-        //   cleanedNumber = '+1' + cleanedNumber;
-        // }
-        // recipients.push(cleanedNumber);
-        return recipients.push(item._2)
-      }
-    });
+      const recipients = [];
+      data.users.slice(855, 888).forEach((item) => {
+        if (item._2 !== 'Phone') {
+          // let cleanedNumber = item._2.replace(/[-() \s]/g, '');
+          // if (!cleanedNumber.startsWith('+1')) {
+          //   cleanedNumber = '+1' + cleanedNumber;
+          // }
+          // recipients.push(cleanedNumber);
+          return recipients.push(item._2);
+        }
+      });
 
-  
-    const BW_NUMBER = senderNum;
+      const BW_NUMBER = senderNum;
       const USER_NUMBER = recipients;
-      console.log(recipients,"recipients")
-    // const USER_NUMBER = ["+13236042424"];
-      
+      console.log(recipients, 'recipients');
+      // const USER_NUMBER = ["+13236042424"];
 
-    const client = new Client({
-      basicAuthUserName: this.BW_USERNAME,
-      basicAuthPassword: this.BW_PASSWORD,
-    });
+      const client = new Client({
+        basicAuthUserName: this.BW_USERNAME,
+        basicAuthPassword: this.BW_PASSWORD,
+      });
 
-    const controller = new ApiController(client);
+      const controller = new ApiController(client);
 
-    const accountId = this.BW_ACCOUNT_ID;
-    const applicationId=this.BW_MESSAGING_APPLICATION_ID
-    const sendMessage = async function () {
-      try {
-        const response = await controller.createMessage(accountId, {
-          applicationId,
-          to: USER_NUMBER,
-          from: BW_NUMBER,
-          text: message,
-
-        });
-        return {
-          result: response,
-        };
-      } catch (error) {
-        console.log(error,"error message")
-        return {
-          statusCode: error.response?.statusCode || 500,
-          message: error.response?.data?.message || 'Failed to send message',
-        };
-      }
-    };
+      const accountId = this.BW_ACCOUNT_ID;
+      const applicationId = this.BW_MESSAGING_APPLICATION_ID;
+      const sendMessage = async function () {
+        try {
+          const response = await controller.createMessage(accountId, {
+            applicationId,
+            to: USER_NUMBER,
+            from: BW_NUMBER,
+            text: message,
+          });
+          return {
+            result: response,
+          };
+        } catch (error) {
+          console.log(error, 'error message');
+          return {
+            statusCode: error.response?.statusCode || 500,
+            message: error.response?.data?.message || 'Failed to send message',
+          };
+        }
+      };
 
       return await sendMessage();
     } catch (error) {
-      return {error}
+      return { error };
     }
   }
   async createMessagingApplication() {
     const inboundCallbackUrl = `https://izhmw2qjmx.us-east-2.awsapprunner.com/api/v1/sms/inbound-message`;
     const outboundCallbackUrl = `https://izhmw2qjmx.us-east-2.awsapprunner.com/api/v1/sms/outbound-status`;
 
-    const auth ="12858273ac31b3ff0adf744323fdfdf3488e0777131fd7f4";
+    const auth = '12858273ac31b3ff0adf744323fdfdf3488e0777131fd7f4';
     const url = `https://dashboard.bandwidth.com/api/accounts/${this.BW_ACCOUNT_ID}/applications`;
 
     const requestData = {
@@ -181,28 +181,28 @@ export class SmsSendService {
         OutboundCallbackUrl: outboundCallbackUrl,
         InboundCallbackCreds: {
           UserId: this.BW_USERNAME,
-          Password: this.BW_PASSWORD
+          Password: this.BW_PASSWORD,
         },
         OutboundCallbackCreds: {
           UserId: this.BW_USERNAME,
-          Password: this.BW_PASSWORD
+          Password: this.BW_PASSWORD,
         },
         RequestedCallbackTypes: {
           CallbackType: [
             'message-delivered',
             'message-failed',
-            'message-sending'
-          ]
-        }
-      }
+            'message-sending',
+          ],
+        },
+      },
     };
 
     try {
       const response = await axios.default.post(url, requestData, {
         headers: {
           'Content-Type': 'application/xml',
-          'Authorization': `Basic ${auth}`
-        }
+          Authorization: `Basic ${auth}`,
+        },
       });
       console.log('Application created successfully:', response.data);
       return response.data;
@@ -217,20 +217,16 @@ export class SmsSendService {
     // if (alreadyData) {
     //     await this.MessageReceivedModel.deleteMany()
     // }
-    
-      return await this.MessageReceivedModel.insertMany(body);
-   
-    }
-  
-    
+
+    return await this.MessageReceivedModel.insertMany(body);
+  }
+
   async handleOutboundStatus(body: MessageStatusDTO[]) {
     // const alreadyData=await this.MessageStatusModel.find({})
     // if (alreadyData) {
     //     await this.MessageStatusModel.deleteMany()
     // }
-     return await this.MessageStatusModel.insertMany(body)
-      // Process the outbound status update event
-      
-    }
+    return await this.MessageStatusModel.insertMany(body);
+    // Process the outbound status update event
+  }
 }
-

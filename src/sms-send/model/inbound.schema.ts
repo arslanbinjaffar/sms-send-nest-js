@@ -1,6 +1,5 @@
-import { string } from "@bandwidth/messaging/dist/schema";
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
 @Schema({
   timestamps: true,
@@ -41,13 +40,12 @@ export const MessageSchema = SchemaFactory.createForClass(Message);
 @Schema({
   timestamps: true,
 })
-  
-
 export class MessageStatus extends Document {
-  @Prop({ type: String, required: true,enum:[
-    "message-failed",
-    "message-delivered",
-    "message-sending"] })
+  @Prop({
+    type: String,
+    required: true,
+    enum: ['message-failed', 'message-delivered', 'message-sending'],
+  })
   type: string;
 
   @Prop({ type: String })
@@ -59,7 +57,7 @@ export class MessageStatus extends Document {
   @Prop({ type: String })
   to: string;
 
-  @Prop({ type: Number})
+  @Prop({ type: Number })
   errorCode: number;
 
   @Prop({ type: MessageSchema, required: true })
@@ -68,29 +66,24 @@ export class MessageStatus extends Document {
 
 export const MessageStatusSchema = SchemaFactory.createForClass(MessageStatus);
 
-
 @Schema({
   timestamps: true,
 })
-
-export class MessageReceived extends Document{
-  @Prop({ type: String,required:true })
+export class MessageReceived extends Document {
+  @Prop({ type: String, required: true })
   type: string;
 
-  @Prop({ type: String,required:true })
+  @Prop({ type: String, required: true })
   time: string;
 
-  @Prop({ type: String,required:true })
+  @Prop({ type: String, required: true })
   description: string;
 
-  @Prop({ type: String,required:true })
+  @Prop({ type: String, required: true })
   to: string;
   @Prop({ type: MessageSchema })
   message: Message;
 }
 
-
-
-
-export const MessageReceivedSchema = SchemaFactory.createForClass(MessageReceived);
-
+export const MessageReceivedSchema =
+  SchemaFactory.createForClass(MessageReceived);
