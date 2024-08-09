@@ -116,20 +116,19 @@ export class SmsSendService {
   ): Promise<any> {
     try {
       const recipients = [];
-      data.users.slice(855, 888).forEach((item) => {
+      data.users.slice(1, 9).forEach((item) => {
         if (item._2 !== 'Phone') {
-          // let cleanedNumber = item._2.replace(/[-() \s]/g, '');
-          // if (!cleanedNumber.startsWith('+1')) {
-          //   cleanedNumber = '+1' + cleanedNumber;
-          // }
-          // recipients.push(cleanedNumber);
-          return recipients.push(item._2);
+          let cleanedNumber = item._2.replace(/[-() \s]/g, '');
+          if (!cleanedNumber.startsWith('+1')) {
+            cleanedNumber = '+1' + cleanedNumber;
+          }
+          recipients.push(cleanedNumber);
         }
       });
 
       const BW_NUMBER = senderNum;
       const USER_NUMBER = recipients;
-      console.log(recipients, 'recipients');
+      // console.log(recipients, 'recipients');
       // const USER_NUMBER = ["+13236042424"];
 
       const client = new Client({
@@ -153,7 +152,6 @@ export class SmsSendService {
             result: response,
           };
         } catch (error) {
-          console.log(error, 'error message');
           return {
             statusCode: error.response?.statusCode || 500,
             message: error.response?.data?.message || 'Failed to send message',
@@ -212,7 +210,7 @@ export class SmsSendService {
     }
   }
 
-  async handleInboundMessage(body: MessageReceivedDTO[]) {
+  async handleInboundMessage(body: MessageReceivedDTO[] | any) {
     // const alreadyData=await this.MessageReceivedModel.find({})
     // if (alreadyData) {
     //     await this.MessageReceivedModel.deleteMany()
@@ -221,7 +219,7 @@ export class SmsSendService {
     return await this.MessageReceivedModel.insertMany(body);
   }
 
-  async handleOutboundStatus(body: MessageStatusDTO[]) {
+  async handleOutboundStatus(body: MessageStatusDTO[] | any) {
     // const alreadyData=await this.MessageStatusModel.find({})
     // if (alreadyData) {
     //     await this.MessageStatusModel.deleteMany()

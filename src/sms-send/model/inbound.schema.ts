@@ -5,34 +5,34 @@ import { Document } from 'mongoose';
   timestamps: true,
 })
 export class Message extends Document {
-  @Prop({ type: String, required: true })
+  @Prop({ type: String    })
   id: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String    })
   owner: string;
 
   @Prop({ type: String })
   time: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String    })
   direction: string;
 
-  @Prop({ type: [String], required: true })
+  @Prop({ type: [String]    })
   to: string[];
 
-  @Prop({ type: [String], required: true })
+  @Prop({ type: [String]    })
   from: string[];
 
   @Prop({ type: String })
   text: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String    })
   applicationId: string;
 
   @Prop({ type: [String], default: [] })
   media: string[];
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number    })
   segmentCount: number;
 }
 
@@ -43,7 +43,6 @@ export const MessageSchema = SchemaFactory.createForClass(Message);
 export class MessageStatus extends Document {
   @Prop({
     type: String,
-    required: true,
     enum: ['message-failed', 'message-delivered', 'message-sending'],
   })
   type: string;
@@ -60,7 +59,7 @@ export class MessageStatus extends Document {
   @Prop({ type: Number })
   errorCode: number;
 
-  @Prop({ type: MessageSchema, required: true })
+  @Prop({ type: MessageSchema    })
   message: Message;
 }
 
@@ -70,16 +69,16 @@ export const MessageStatusSchema = SchemaFactory.createForClass(MessageStatus);
   timestamps: true,
 })
 export class MessageReceived extends Document {
-  @Prop({ type: String, required: true })
+  @Prop({ type: String })
   type: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String    })
   time: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String    })
   description: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String    })
   to: string;
   @Prop({ type: MessageSchema })
   message: Message;

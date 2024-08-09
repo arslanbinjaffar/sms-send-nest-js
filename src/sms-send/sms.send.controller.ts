@@ -68,19 +68,21 @@ export class smsSendController {
       body.message,
       body.senderNum,
     );
-    if (result.statusCode == 500) {
-      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+    if (result.statusCode == 400 ) {
+      return response.status( result.statusCode || HttpStatus.INTERNAL_SERVER_ERROR).json({
         error: 'An error occurred while sending the message' || result.message,
       });
     }
-    return response.status(HttpStatus.OK).json({
-      message: result.message,
-      result,
-    });
+    else {
+      return response.status(result.statusCode ||  HttpStatus.OK ).json({
+        message: result.message,
+        result,
+      });
+    }
   }
   @Post('inbound-message')
   async handleInboundMessage(
-    @Body() body: MessageReceivedDTO[],
+    @Body() body: MessageReceivedDTO[] | any,
     @Res() res: Response,
   ) {
     console.log(body, 'body');
@@ -90,7 +92,7 @@ export class smsSendController {
 
   @Post('outbound-status')
   async handleOutboundStatus(
-    @Body() body: MessageStatusDTO[],
+    @Body() body: MessageStatusDTO[] | any,
     @Res() res: Response,
   ) {
     try {
@@ -104,9 +106,5 @@ export class smsSendController {
     }
   }
 
-  @Post('dashboard')
-  async handleCreateMessagingApplication(@Res() res: Response) {
-    const bodyData = await this.smsSendService.createMessagingApplication();
-    res.send(bodyData);
-  }
+  
 }
