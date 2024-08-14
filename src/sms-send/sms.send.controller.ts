@@ -68,7 +68,7 @@ export class smsSendController {
       body.message,
       body.senderNum,
     );
-    if (result.statusCode == 400 ) {
+    if (result.statusCode == 400 ||  result.statusCode == 500) {
       return response.status( result.statusCode || HttpStatus.INTERNAL_SERVER_ERROR).json({
         error: 'An error occurred while sending the message' || result.message,
       });

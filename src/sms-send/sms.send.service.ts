@@ -116,19 +116,20 @@ export class SmsSendService {
   ): Promise<any> {
     try {
       const recipients = [];
-      data.users.slice(1, 9).forEach((item) => {
+      data.users.slice(1,50).forEach((item) => {
         if (item._2 !== 'Phone') {
           let cleanedNumber = item._2.replace(/[-() \s]/g, '');
-          if (!cleanedNumber.startsWith('+1')) {
-            cleanedNumber = '+1' + cleanedNumber;
+          if (cleanedNumber.length === 10 && cleanedNumber[0] !== '0' && cleanedNumber[0] !== '1') {
+            // Add '1' if the number doesn't already start with it (assuming it's North American)
+            // cleanedNumber = '1' + cleanedNumber;
+            recipients.push(`${cleanedNumber}` );
+
           }
-          recipients.push(cleanedNumber);
         }
       });
-
       const BW_NUMBER = senderNum;
       const USER_NUMBER = recipients;
-      // console.log(recipients, 'recipients');
+      console.log(recipients, 'recipients');
       // const USER_NUMBER = ["+13236042424"];
 
       const client = new Client({
@@ -148,6 +149,8 @@ export class SmsSendService {
             from: BW_NUMBER,
             text: message,
           });
+      console.log(response,"response")
+
           return {
             result: response,
           };
